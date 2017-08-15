@@ -21,7 +21,10 @@ const TYPE_INDEX: Flag<Type> = {
   quantitative: 1,
   ordinal: 1,
   temporal: 1,
-  nominal: 1
+  nominal: 1,
+  latitude: 1,
+  longitude: 1,
+  geojson: 1
 };
 
 export function isType(t: any): t is Type {
