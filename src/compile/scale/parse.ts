@@ -1,5 +1,6 @@
-import {SCALE_CHANNELS, ScaleChannel} from '../../channel';
+import {SCALE_CHANNELS, ScaleChannel, SHAPE, X, Y} from '../../channel';
 import {FieldDef, getFieldDef, isConditionalDef, isFieldDef} from '../../fielddef';
+import {GEOSHAPE} from '../../mark';
 import {
   NON_TYPE_DOMAIN_RANGE_VEGA_SCALE_PROPERTIES,
   Scale,
@@ -7,7 +8,8 @@ import {
   ScaleType,
   scaleTypePrecedence,
 } from '../../scale';
-import {keys} from '../../util';
+import {GEOJSON, LATITUDE, LONGITUDE} from '../../type';
+import {contains, keys} from '../../util';
 import {VgScale} from '../../vega.schema';
 import {isUnitModel, Model} from '../model';
 import {defaultScaleResolve} from '../resolve';
@@ -45,6 +47,13 @@ function parseUnitScaleCore(model: UnitModel): ScaleComponentIndex {
   const mark = model.mark();
 
   return SCALE_CHANNELS.reduce((scaleComponents: ScaleComponentIndex, channel: ScaleChannel) => {
+    // if mark is geoshape scale channel encodes the geojson
+    const def = encoding[channel];
+    if (isFieldDef(def) && ((mark === GEOSHAPE && isFieldDef(def) && channel === SHAPE && def.type === GEOJSON)
+    || (contains([X, Y], channel) && contains([LATITUDE, LONGITUDE], def.type)))) {
+      return scaleComponents;
+    }
+
     let fieldDef: FieldDef<string>;
     let specifiedScale: Scale = {};
 
@@ -56,9 +65,9 @@ function parseUnitScaleCore(model: UnitModel): ScaleComponentIndex {
     } else if (isConditionalDef(channelDef) && isFieldDef(channelDef.condition)) {
       fieldDef = channelDef.condition;
       specifiedScale = channelDef.condition.scale || {};
-    } else if (channel === 'x') {
+    } else if (channel === X) {
       fieldDef = getFieldDef(encoding.x2);
-    } else if (channel === 'y') {
+    } else if (channel === Y) {
       fieldDef = getFieldDef(encoding.y2);
     }
 
@@ -70,6 +79,7 @@ function parseUnitScaleCore(model: UnitModel): ScaleComponentIndex {
         {value: sType, explicit: specifiedScaleType === sType}
       );
     }
+
     return scaleComponents;
   }, {});
 }

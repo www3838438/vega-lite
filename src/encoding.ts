@@ -75,9 +75,10 @@ export interface Encoding<F> {
   size?: ConditionalFieldDef<LegendFieldDef<F>> | ConditionalValueDef<LegendFieldDef<F>>;
 
   /**
-   * The symbol's shape (only for `point` marks). The supported values are
+   * For `point` marks the supported values are
    * `"circle"` (default), `"square"`, `"cross"`, `"diamond"`, `"triangle-up"`,
-   * or `"triangle-down"`, or else a custom SVG path string.
+   * `"triangle-down"`, or a custom SVG path string.
+   * For `geoshape` marks it should be a fielddef of the geojson data
    * __Default value:__ If undefined, the default shape depends on [mark config](config.html#point-config)'s `shape` property.
    */
   shape?: ConditionalFieldDef<LegendFieldDef<F>> | ConditionalValueDef<LegendFieldDef<F>>; // TODO: maybe distinguish ordinal-only
