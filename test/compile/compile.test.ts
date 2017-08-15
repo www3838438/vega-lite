@@ -7,7 +7,7 @@ import * as log from '../../src/log';
 import {compile} from '../../src/compile/compile';
 
 
-describe('Compile', function() {
+describe('compile/compile', function() {
   it('should throw error for invalid spec', () => {
     assert.throws(() => {
       compile({} as any);
@@ -33,6 +33,40 @@ describe('Compile', function() {
 
       assert.equal(spec.data.length, 1); // just source
       assert.equal(spec.marks.length, 1); // just the root group
+    });
+
+    it('should return a spec with projections (implicit)', () => {
+      const spec = compile({
+        "mark": "geoshape",
+        "data": {
+          "url": "data/us-10m.json",
+          "format": {
+            "type": "topojson",
+            "feature": "states"
+          }
+        },
+        "encoding": {}
+      }).spec;
+      console.log(spec);
+      assert.isDefined(spec.projections);
+    });
+
+    it('should return a spec with projections (explicit)', () => {
+      const spec = compile({
+        "mark": "geoshape",
+        "projection": {
+          "type": "albersUsa"
+        },
+        "data": {
+          "url": "data/us-10m.json",
+          "format": {
+            "type": "topojson",
+            "feature": "states"
+          }
+        },
+        "encoding": {}
+      }).spec;
+      assert.isDefined(spec.projections);
     });
 
     it('should return a spec with specified top-level properties, size signals, data and marks', () => {
