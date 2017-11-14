@@ -1,5 +1,6 @@
 import {assert} from 'chai';
 import {FacetNode} from '../../../src/compile/data/facet';
+import {VgAggregateTransform} from '../../../src/vega.schema';
 import {parseFacetModelWithScale} from '../../util';
 
 describe('compile/data/facet', function() {

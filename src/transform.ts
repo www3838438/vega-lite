@@ -4,6 +4,7 @@ import {Data} from './data';
 import {Filter, normalizeFilter} from './filter';
 import {LogicalOperand, normalizeLogicalOperand} from './logical';
 import {TimeUnit} from './timeunit';
+import {WindowOnlyOp} from './window';
 
 
 export interface FilterTransform {
@@ -97,6 +98,57 @@ export interface AggregatedFieldDef {
   as: string;
 }
 
+export interface WindowFieldDef {
+  /**
+   * The operations supported for the window aggregation
+   */
+  op: AggregateOp | WindowOnlyOp;
+
+  /**
+   * The optional parameters for the operation
+   */
+  param?: Number;
+
+  /**
+   * The field that will be used in the operation, some operations
+   * do not require fields
+   */
+  field?: string;
+
+  /**
+   * The name for the new field in the window transform
+   */
+  as?: string;
+}
+
+export interface WindowTransform {
+  /**
+   * Array of objects that summarize the fields that will be aggregated over the window
+   */
+  window: WindowFieldDef[];
+
+  /**
+   * The frame for the window, if none is set the default is [null, 0] everything before the
+   * current item
+   */
+  frame?: Number[];
+
+  /**
+   * Whether to ignoreThePeers during the comparison in the window
+   */
+  ignorePeers?: boolean;
+
+  /**
+   * The fields to group by
+   */
+  groupby?: string[];
+
+  /**
+   * The comparator to use to determine the window
+   */
+  sort?: Comparator;
+}
+
 export interface LookupData {
   /**
    * Secondary data source to lookup in.
@@ -139,8 +191,24 @@ export interface LookupTransform {
   default?: string;
 }
 
+export interface Comparator {
+  /**
+   * The field that will be compared
+   */
+  field: string;
+
+  /**
+   * The order in which it will be compared
+   */
+  order?: 'ascending' | 'descending';
+}
+
 export function isLookup(t: Transform): t is LookupTransform {
   return t['lookup'] !== undefined;
+}
+
+export function isWindow(t: Transform): t is WindowTransform {
+  return t['window'] !== undefined;
 }
 
 export function isCalculate(t: Transform): t is CalculateTransform {
@@ -159,7 +227,7 @@ export function isAggregate(t: Transform): t is AggregateTransform {
   return t['aggregate'] !== undefined;
 }
 
-export type Transform = FilterTransform | CalculateTransform | LookupTransform | BinTransform | TimeUnitTransform | AggregateTransform;
+export type Transform = FilterTransform | CalculateTransform | LookupTransform | BinTransform | TimeUnitTransform | AggregateTransform | WindowTransform;
 
 export function normalizeTransform(transform: Transform[]) {
   return transform.map(t => {

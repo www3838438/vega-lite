@@ -1093,6 +1093,27 @@
       ],
       "type": "object"
     },
+    "Comparator": {
+      "additionalProperties": false,
+      "properties": {
+        "field": {
+          "description": "The field that will be compared",
+          "type": "string"
+        },
+        "order": {
+          "description": "The order in which it will be compared",
+          "enum": [
+            "ascending",
+            "descending"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "field"
+      ],
+      "type": "object"
+    },
     "CompositeMarkConfigMixins": {
       "$ref": "#/definitions/BoxPlotConfigMixins"
     },
@@ -6252,6 +6273,9 @@
         },
         {
           "$ref": "#/definitions/AggregateTransform"
+        },
+        {
+          "$ref": "#/definitions/WindowTransform"
         }
       ]
     },
@@ -7254,6 +7278,85 @@
           "type": "boolean"
         }
       },
+      "type": "object"
+    },
+    "WindowFieldDef": {
+      "additionalProperties": false,
+      "properties": {
+        "as": {
+          "description": "The name for the new field in the window transform",
+          "type": "string"
+        },
+        "field": {
+          "description": "The field that will be used in the operation, some operations\ndo not require fields",
+          "type": "string"
+        },
+        "op": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AggregateOp"
+            },
+            {
+              "$ref": "#/definitions/WindowOnlyOp"
+            }
+          ],
+          "description": "The operations supported for the window aggregation"
+        },
+        "param": {
+          "additionalProperties": false,
+          "description": "The optional parameters for the operation",
+          "type": "object"
+        }
+      },
+      "required": [
+        "op"
+      ],
+      "type": "object"
+    },
+    "WindowOnlyOp": {
+      "enum": [
+        ""
+      ],
+      "type": "string"
+    },
+    "WindowTransform": {
+      "additionalProperties": false,
+      "properties": {
+        "frame": {
+          "description": "The frame for the window, if none is set the default is [null, 0] everything before the\ncurrent item",
+          "items": {
+            "additionalProperties": false,
+            "description": "An object that represents a number of any kind. All JavaScript numbers are 64-bit floating-point numbers. ",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "groupby": {
+          "description": "The fields to group by",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "ignorePeers": {
+          "description": "Whether to ignoreThePeers during the comparison in the window",
+          "type": "boolean"
+        },
+        "sort": {
+          "$ref": "#/definitions/Comparator",
+          "description": "The comparator to use to determine the window"
+        },
+        "window": {
+          "description": "Array of objects that summarize the fields that will be aggregated over the window",
+          "items": {
+            "$ref": "#/definitions/WindowFieldDef"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "window"
+      ],
       "type": "object"
     }
   }

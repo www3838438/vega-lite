@@ -15,6 +15,7 @@ import {LookupNode} from './lookup';
 import {SourceNode} from './source';
 import {StackNode} from './stack';
 import {TimeUnitNode} from './timeunit';
+import {WindowTransformNode} from './window';
 
 /**
  * Print debug information for dataflow tree.
@@ -87,6 +88,7 @@ function makeWalkTree(data: VgData[]) {
       node instanceof CalculateNode ||
       node instanceof AggregateNode ||
       node instanceof LookupNode ||
+      node instanceof WindowTransformNode ||
       node instanceof IdentifierNode) {
       dataSource.transform.push(node.assemble());
     }

@@ -4,6 +4,7 @@ import {NiceTime, ScaleType} from './scale';
 import {SortOrder} from './sort';
 import {StackOffset} from './stack';
 import {Flag, flagKeys, isArray} from './util';
+import {WindowOnlyOp} from './window';
 
 export interface VgData {
   name: string;
@@ -330,7 +331,7 @@ export interface VgIdentifierTransform {
   as: string;
 }
 
-export type VgTransform = VgBinTransform | VgExtentTransform | VgFormulaTransform | VgAggregateTransform | VgFilterTransform | VgImputeTransform | VgStackTransform | VgCollectTransform | VgLookupTransform | VgIdentifierTransform;
+export type VgTransform = VgBinTransform | VgExtentTransform | VgFormulaTransform | VgAggregateTransform | VgFilterTransform | VgImputeTransform | VgStackTransform | VgCollectTransform | VgLookupTransform | VgIdentifierTransform | VgWindowTransform;
 
 export interface VgAxisEncode {
   ticks?: VgGuideEncode;
@@ -1182,4 +1183,23 @@ export interface VgTitleConfig {
    * Default title orientation ("top", "bottom", "left", or "right")
    */
   orient?: TitleOrient;
+}
+
+export type VgComparatorOrder = 'ascending' | 'descending';
+
+export interface VgComparator {
+  field?: string | string[];
+  order?: VgComparatorOrder;
+}
+
+export interface VgWindowTransform {
+  type: 'window';
+  sort?: VgComparator;
+  groupby?: string[];
+  ops?: (AggregateOp | WindowOnlyOp)[];
+  fields?: string[];
+  params?: Number[];
+  as?: string[];
+  frame?: Number[];
+  ignorePeers?: Boolean;
 }

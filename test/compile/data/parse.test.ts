@@ -7,6 +7,8 @@ import {CalculateNode} from '../../../src/compile/data/calculate';
 import {FilterNode} from '../../../src/compile/data/filter';
 import {parseTransformArray} from '../../../src/compile/data/parse';
 import {TimeUnitNode} from '../../../src/compile/data/timeunit';
+import {WindowTransformNode} from '../../../src/compile/data/window';
+import {Transform} from '../../../src/transform';
 import {parseUnitModel} from '../../util';
 
 describe('compile/data/parse', () => {
@@ -54,6 +56,30 @@ describe('compile/data/parse', () => {
       const result = parseTransformArray(model);
       assert.isTrue(result.first instanceof BinNode);
       assert.isTrue(result.last instanceof AggregateNode);
+    });
+
+    it ('should return a WindowTransform Node', () => {
+      const transform: Transform = {
+        window: [
+          {
+            op: 'count',
+            field: 'f',
+            as: 'b',
+          }
+        ],
+      };
+      const model = parseUnitModel({
+        data: {values: []},
+        mark: 'point',
+        transform: [
+          transform
+        ],
+        encoding: {
+          x: {field: 'a', type: 'temporal', timeUnit: 'month'}
+        }
+      });
+      const result = parseTransformArray(model);
+      assert.isTrue(result.first instanceof WindowTransformNode);
     });
   });
 });
