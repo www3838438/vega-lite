@@ -1,8 +1,8 @@
 /* tslint:disable:quotemark */
 
 import {assert} from 'chai';
-
-import {getPathSort, parseMarkGroup} from '../../../src/compile/mark/mark';
+import {COLOR, DETAIL, OPACITY, SIZE, UNIT_CHANNELS} from '../../../src/channel';
+import {getPathSort, parseMarkGroup, pathGroupingFields} from '../../../src/compile/mark/mark';
 import {UnitModel} from '../../../src/compile/unit';
 import {parseFacetModel, parseUnitModel, parseUnitModelWithScale, parseUnitModelWithScaleAndLayoutSize} from '../../util';
 
@@ -184,5 +184,46 @@ describe('Mark', function() {
       assert.deepEqual(getPathSort(model), undefined);
     });
   });
+  describe('pathGroupingFields', () => {
+    it('should return fields for unaggregate detail, color, size, opacity fieldDefs.', () => {
+      for (const channel of [DETAIL, COLOR, SIZE, OPACITY]) {
+        assert.deepEqual(
+          pathGroupingFields({[channel]: {field: 'a', type: 'nominal'}}),
+          ['a']
+        );
+      }
+    });
+
+    it('should not return fields for unaggregate detail, color, size, opacity fieldDefs.', () => {
+      for (const channel of [DETAIL, COLOR, SIZE, OPACITY]) {
+        assert.deepEqual(
+          pathGroupingFields({[channel]: {aggregate: 'mean', field: 'a', type: 'nominal'}}),
+          []
+        );
+      }
+    });
+
+    it('should return condition detail fields for color, size, shape', () => {
+      for (const channel of [COLOR, SIZE, OPACITY]) {
+        assert.deepEqual(
+          pathGroupingFields({[channel]: {
+            condition: {selection: 'sel', field: 'a', type: 'nominal'}
+          }}),
+          ['a']
+        );
+      }
+    });
+
+    it('should not return errors for all channels', () => {
+      for (const channel of UNIT_CHANNELS) {
+        assert.doesNotThrow(
+          () => {
+            pathGroupingFields({
+              [channel]: {field: 'a', type: 'nominal'}
+            });
+          }
+        );
+      }
+    });
   });
 });
