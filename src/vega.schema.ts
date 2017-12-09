@@ -1056,6 +1056,18 @@ export interface VgMarkConfig {
    * Placeholder text if the `text` channel is not specified
    */
   text?: string;
+
+  /**
+   * A URL to load upon mouse click. If defined, the mark acts as a hyperlink.
+   *
+   * @format uri
+   */
+  href?: string;
+
+  /**
+   * The mouse cursor used over the mark. Any valid [CSS cursor type](https://developer.mozilla.org/en-US/docs/Web/CSS/cursor#Values) can be used.
+   */
+  cursor?: string;
 }
 
 const VG_MARK_CONFIG_INDEX: Flag<keyof VgMarkConfig> = {
@@ -1084,10 +1096,11 @@ const VG_MARK_CONFIG_INDEX: Flag<keyof VgMarkConfig> = {
   font: 1,
   fontSize: 1,
   fontWeight: 1,
-  fontStyle: 1
+  fontStyle: 1,
+  href: 1,
+  cursor: 1,
   // commented below are vg channel that do not have mark config.
   // 'x'|'x2'|'xc'|'width'|'y'|'y2'|'yc'|'height'
-  // cursor: 1,
   // clip: 1,
   // dir: 1,
   // ellipsis: 1,
